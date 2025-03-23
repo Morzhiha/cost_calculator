@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+</head>
+<body>
+    <div>
+        <h2>Рецепт</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Ингредиент</th>
+                    <th>Вес/объем</th>
+                    <th>Ед. измерения</th>
+                    <th>Цена</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for product in recipe.ingredients %}
+                <tr>
+                    <td>{{product.name}}</td>
+                    <td><input type="number" value="{{product.weight}}"></td>
+                    <td>{{product.unit}}</td>
+                    <td>{{product.price}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td>Итог:</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</body>
+</html>
