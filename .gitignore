@@ -1,6 +1,8 @@
 # Python
 *.pyc
 __pycache__/
+.idea/*
+*.xml
 
 # Django
 db.sqlite3

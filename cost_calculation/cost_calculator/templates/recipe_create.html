@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .ingredient-cost, .unit-price, #total-cost, #cost-per-weight {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .table-responsive {
+            margin-bottom: 20px;
+        }
+        .calculation-block {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .remove-row {
+
+        }
+        @media (max-width: 768px) {
+            #ingredients-table th, #ingredients-table td {
+                padding: 0.3rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+    {{ recipe_id|json_script:"recipe-id" }}
+    {{products|json_script:"products-data"}}
+    {{edit_mode|json_script:"edit-mode"}}
+
+    {% load crispy_forms_tags %}
+    <div class="container mt-4">
+        <h2 class="mb-4">{% if edit_mode %}Редактирование{% else %}Добавление{% endif %} рецепта</h2>
+
+        <form id="recipe-form" class="mb-4">
+            {% csrf_token %}
+            <div>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title">Основная информация</h4>
+                        <div class="mb-3">
+                            {% crispy recipe_form %}
+                        </div>
+                    </div>
+                </div>
+
+                {{ ingredient_formset.management_form }}
+
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h4 class="card-title mb-3">Ингредиенты</h4>
+
+                        <div class="table-responsive rounded">
+                            <table class="table table-striped table-hover" id="ingredients-table">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Продукт</th>
+                                        <th>Кол-во (гр/мл/шт)</th>
+                                        <th>Цена за ед.</th>
+                                        <th>Стоимость</th>
+                                        <th style="width: 50px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ingredients-list" class="table-group-divider">
+                                    {% for form in ingredient_formset %}
+                                    <tr class="ingredient-row">
+                                        <td>{{ form.product }}</td>
+                                        <td>{{ form.quantity }}</td>
+                                        <td class="unit-price">-</td>
+                                        <td class="ingredient-cost">0.00</td>
+                                        <td>
+                                            <button type="button" class="btn btn-sm remove-row" style="visibility: hidden;" disabled >
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-active">
+                                        <th colspan="3">Итого:</th>
+                                        <th id="total-cost">0.00</th>
+                                        <th></th>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <div id="no-ingredients-alert" class="alert alert-warning d-none mt-3">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            Все доступные ингредиенты уже использованы.
+                            <div class="mt-2">
+                                <a href="{% url 'products' %}" id="add-products-link" class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-plus-circle"></i> Добавить новые продукты
+                                </a>
+                                <span id="unsaved-warning" class="text-danger d-none ms-2">
+                                    <i class="bi bi-exclamation-circle"></i> Внимание! У вас есть несохраненные изменения
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="calculation-block">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="id_need_weight" class="form-label">Вес для расчета (грамм):</label>
+                                <input type="number" id="id_need_weight" class="form-control" value="100" min="1">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">Себестоимость на <span id="weight-display">100</span> грамм:</label>
+                                <div class="h4 text-primary" id="cost-per-weight">0.00</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        <i class="bi bi-save"></i> Сохранить рецепт
+                    </button>
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script src="/static/js/recipes/create.js"></script>
+{% endblock %}

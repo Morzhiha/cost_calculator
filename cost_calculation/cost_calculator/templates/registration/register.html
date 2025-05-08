@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+    <link rel="stylesheet" href="/static/css/auth.css">
+{% endblock %}
+
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2 class="auth-title">Регистрация</h2>
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">
+                    {{ field.label }}
+                    {% if field.field.required %}<span class="required">*</span>{% endif %}
+                </label>
+                {{ field }}
+                {% if field.errors %}
+                <div class="invalid-feedback">
+                    {{ field.errors|join:", " }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-primary auth-btn">Зарегистрироваться</button>
+            <div class="auth-links">
+                <a href="{% url 'login' %}">Уже есть аккаунт? Войти</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
